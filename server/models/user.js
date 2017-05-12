@@ -13,7 +13,6 @@ var UserSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: validator.isEmail,
-      isAsync: false,
       message: '{VALUE} is not a valid email'
     }
   },
@@ -70,20 +69,20 @@ UserSchema.statics.findByToken = function (token) {
   });
 };
 
-UserSchema.pre('save', function(next){
-    var user = this;
+UserSchema.pre('save', function (next) {
+  var user = this;
 
-   if(user.isModified('password')) {
+  if (user.isModified('password')) {
     bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            user.password = hash;
-            next();
-        });
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        next();
+      });
     });
-   } else {
-       next();
-   }
-})
+  } else {
+    next();
+  }
+});
 
 var User = mongoose.model('User', UserSchema);
 
